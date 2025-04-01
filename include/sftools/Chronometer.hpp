@@ -47,18 +47,16 @@ namespace sftools
     public:
         /*!
          @brief Constructor
-         
          @param initialTime Initial time elapsed
          */
-        Chronometer(sf::Time initialTime = sf::Time::Zero)
+        Chronometer(sf::Time initialTime = sf::Time::Zero) : m_state(STOPPED), m_time(sf::Time::Zero)
         {
-            reset();
+            reset(false);
             add(initialTime);
         }
 
         /*!
          @brief Add some time
-         
          @param time Time to be added to the time elapsed
          @return Time elapsed
          */
@@ -154,20 +152,20 @@ namespace sftools
 
         /*!
          @brief Give the amount of time elapsed since the chronometer was started
-         
+
          @return Time elapsed
          */
         sf::Time getElapsedTime() const
         {
             switch (m_state) {
-                case STOPPED:
-                    return sf::Time::Zero;
-
                 case RUNNING:
                     return m_time + m_clock.getElapsedTime();
 
                 case PAUSED:
                     return m_time;
+
+                default:
+                    return sf::Time::Zero;
             }
         }
 
@@ -175,12 +173,17 @@ namespace sftools
          @brief Implicit conversion to sf::Time
 
          @return Time elapsed
-         
+
          @see getElapsedTime
          */
         operator sf::Time() const
         {
             return getElapsedTime();
+        }
+
+        bool isPaused() const
+        {
+            return m_state == PAUSED;
         }
 
     private:
